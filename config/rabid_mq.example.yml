@@ -1,0 +1,19 @@
+default: &default
+  host: localhost
+  port: 5672
+  ssl: false
+  vhost: "/"
+  user: guest
+  pass: guest
+  heartbeat: server
+  frame_max: 131072
+  auth_mechanism: PLAIN
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
