@@ -1,5 +1,12 @@
-require "rabid_mq/version"
-
+require 'bunny'
+require 'yaml'
+require 'active_support/concern'
+require 'active_support/core_ext/module/delegation'
+require 'rabid_mq/version'
+require 'rabid_mq/railtie' if defined?(::Rails::Railtie)
+require 'rabid_mq/config'
+require 'rabid_mq/listener'
+require 'rabid_mq/publisher'
 # Module to abstract the boilerplate of connecting to rabbitMQ
 # This will also abstract how the credentials are supplied etc
 module RabidMQ
@@ -27,6 +34,9 @@ module RabidMQ
     def connect
       connection.tap do |c|
         c.start
+        at_exit do
+          c.close
+        end
       end
     end
 

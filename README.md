@@ -1,4 +1,4 @@
-# RabidMq
+# RabidMQ
 
 Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rabid_mq`. To experiment with that code, run `bin/console` for an interactive prompt.
 
@@ -14,28 +14,113 @@ gem 'rabid_mq'
 
 And then execute:
 
-    $ bundle
+```
+$ bundle
+```
 
 Or install it yourself as:
 
-    $ gem install rabid_mq
+```
+$ gem install rabid_mq
+```
+
+## Configuration
+
+To configure simply add a yaml file `config/rabid_mq.yml` to your project and adjust the settings to match your requirements. These options are used verbatim to initialize `bunny` so any option supported by bunny is also supported in the rabid_mq config.
+
+```yaml
+# config/rabid_mq.yml
+
+default: &default
+  host: localhost
+  port: 5672
+  ssl: false
+  vhost: "/"
+  user: guest
+  pass: guest
+  heartbeat: server
+  frame_max: 131072
+  auth_mechanism: PLAIN
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+### AMQP Producer
 
-## Development
+To create a RabbitMQ "Producer" you can include the RabidMQ::Publisher concern in your producer class
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+`app/models/my_class.rb`
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+```ruby
+class MyClass
+  include RabidMQ::Publisher
+
+  # code ...
+end
+```
+
+`app/controllers/some_controller.rb`
+
+```ruby
+class SomeController < ApplicationController
+  def create
+    # code ...
+    MyClass.broadcast('some.amqp.topic', "Hello RabbitMQ")
+
+    #  OR
+
+    # if you already have a `broadcast` method you can use the method `amqp_broadcast`
+    MyClass.amqp_broadcast('some.amqp.topic', "Hello RabbitMQ")
+
+    # OR
+
+    # IF you have an instance of MyClass
+    my_class_instance.broadcast('some.amqp.topic', "Hellow RabbitMQ from an instance")
+
+    # code ...
+  end
+end
+```
+
+### Consumer
+
+`app/models/my_class`
+
+```ruby
+class MyClass
+  include RabidMQ::Listener
+
+  amqp 'some_queue_name', 'some.exchange.name', exclusive: false, routing_key: 'some.*.key.*.definition'
+
+  # OR (for finer grained control with more options)
+  # queue_name 'name', **options
+  # exchange 'name', **options
+
+  subscribe do |info, meta, data|
+    # Do your logic with the data here
+  end
+
+  # Or (for finer control on the exchange binding) you can pass in an explicitly created
+  # Bunny::Exchange object with options
+  # bind(exchange, **options).subscribe do |info, meta, data|
+  #  # code ...
+  # end
+end
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rabid_mq. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
+Bug reports and pull requests are welcome on GitHub at <https://github.com/[USERNAME]/rabid_mq>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
