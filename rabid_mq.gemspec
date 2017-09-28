@@ -6,12 +6,12 @@ require 'rabid_mq/version'
 Gem::Specification.new do |spec|
   spec.name          = "rabid_mq"
   spec.version       = RabidMQ::VERSION
-  spec.authors       = ["Tyrone"]
-  spec.email         = ["tdubs241083@gmail.com"]
+  spec.authors       = ["Tyrone Wilson"]
+  spec.email         = ["tyrone.wilson@blackswan.com"]
 
   spec.summary       = %q{Provides easy way to configure and use RabbitMQ in Ruby on Rails}
   spec.description   = %q{If you want to just get up and going in making your rails app into a producer or consumer of RabbitMQ events then use this gem}
-  # spec.homepage      = "N/A"
+  spec.homepage      = "https://github.com/container-streams/rabid_mq"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
