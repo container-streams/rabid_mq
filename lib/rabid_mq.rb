@@ -1,6 +1,5 @@
 require 'bunny'
 require 'yaml'
-require 'sleepers'
 require 'active_support/concern'
 require 'active_support/core_ext/module/delegation'
 require 'rabid_mq/version'
