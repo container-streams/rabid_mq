@@ -54,6 +54,9 @@ module RabidMQ
         def amqp_connection
           amqp_exchange.channel.connection
         end
+        # 
+        # delegate :queue, to: RabidMQ.channel
+        # delegate :channel, to: RabidMQ
 
       end
     end

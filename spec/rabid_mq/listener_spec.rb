@@ -10,7 +10,7 @@ RSpec.describe RabidMQ::Listener do
     # This is just here to ensure we don't get errors doing this. It is just about
     # impossible to test (AFAIK) since the RabidMQ handling is asynchronous
     subscribe do |info, meta, data|
-      ap data
+      puts data
       Rails.logger.info("RabidMQ subscribe works. Received: #{data}")
     end
   end
