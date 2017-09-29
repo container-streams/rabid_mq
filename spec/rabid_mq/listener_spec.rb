@@ -43,19 +43,28 @@ RSpec.describe RabidMQ::Listener do
     it { is_expected.to be_connected }
   end
 
-  describe "env_topic" do
+  describe "name_with_env" do
     let(:exchange_name) { 'test.exchange.name' }
-    subject { test_class.env_topic(exchange_name) }
+    subject { test_class.name_with_env(exchange_name) }
     context 'when there is no rails' do
       it { is_expected.to eq exchange_name }
     end
 
     context 'when rails is defined' do
+      let(:ideal) { "test.exchange.name[development]" }
+
       before do
         Rails = Hashie::Mash.new(env: 'development')
       end
 
-      it { is_expected.to eq "#{exchange_name}[development]" }
+      it { is_expected.to eq ideal }
+
+      context 'if the env is already included' do
+        let(:exchange_name) { "test.exchange.name[development]" }
+        it 'matches the ideal' do
+          is_expected.to eq ideal
+        end
+      end
     end
   end
 end

@@ -32,7 +32,7 @@ module RabidMQ
         # end
         #
         def queue_name(name, **options)
-          @amqp_queue = RabidMQ.channel.queue(name, **options)
+          @amqp_queue = RabidMQ.channel.queue(name_with_env(name), **options)
         end
 
         # Use this as a macro in including classes like
@@ -42,12 +42,7 @@ module RabidMQ
         # end
         #
         def exchange(topic, **options)
-          @amqp_exchange = RabidMQ.topic_exchange env_topic(topic), options
-        end
-
-        def env_topic(topic)
-          return topic unless defined?(::Rails)
-          topic + "[#{Rails.env}]"
+          @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), options
         end
 
         def bind(exchange=@amqp_exchange, routing_key: '#', **options)
@@ -57,6 +52,7 @@ module RabidMQ
         delegate :subscribe, to: :bind
         delegate :channel, to: ::RabidMQ
         delegate :queue, to: :channel
+        delegate :name_with_env, to: ::RabidMQ
 
         def amqp_connection
           amqp_exchange.channel.connection

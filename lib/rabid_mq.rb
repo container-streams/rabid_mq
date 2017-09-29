@@ -1,5 +1,6 @@
 require 'bunny'
 require 'yaml'
+require 'sleepers'
 require 'active_support/concern'
 require 'active_support/core_ext/module/delegation'
 require 'rabid_mq/version'
@@ -14,12 +15,12 @@ module RabidMQ
 
     # Provide a topic exchange on demand connected to the existing channel
     def topic_exchange(topic, **options)
-      channel.topic(topic, **options)
+      channel.topic(name_with_env(topic), **options)
     end
 
     # Provide fanout exchange
     def fanout_exchange(topic, **options)
-      channel.fanout(topic, **options)
+      channel.fanout(name_with_env(topic), **options)
     end
 
     # Get a channel with the Bunny::Session
@@ -38,6 +39,12 @@ module RabidMQ
           c.close
         end
       end
+    end
+
+    def name_with_env(name)
+      return name unless defined?(::Rails)
+      return name if name.match /\[(development|test|production)\]/
+      name + "[#{Rails.env}]"
     end
 
     # Provide a new or existing Bunny::Session
