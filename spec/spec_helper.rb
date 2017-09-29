@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "rabid_mq"
+require 'hashie'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
