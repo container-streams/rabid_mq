@@ -2,7 +2,7 @@ module RabidMQ
   module Config
     class << self
       def load_config
-        @config ||= YAML.load(File.read(file_name))
+        @config ||= YAML.load(File.read(file_name))[Rails.env]
       rescue Errno::ENOENT, NameError => e
         puts "[WARN] #{e.message} in #{__FILE__}. Falling back to default config"
         default_config

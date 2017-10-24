@@ -3,7 +3,7 @@ require 'yaml'
 require 'active_support/concern'
 require 'active_support/core_ext/module/delegation'
 require 'rabid_mq/version'
-require 'rabid_mq/railtie' if defined?(::Rails::Railtie)
+require 'rabid_mq/railtie' if defined?(::Rails)
 require 'rabid_mq/config'
 require 'rabid_mq/listener'
 require 'rabid_mq/publisher'
