@@ -42,7 +42,7 @@ module RabidMQ
 
     def name_with_env(name)
       return name unless defined?(::Rails)
-      return name if name.match /\[(development|test|production)\]/
+      return name if name.match /\[(development|test|production|integration|pod)\]/
       name + "[#{Rails.env}]"
     end
 
