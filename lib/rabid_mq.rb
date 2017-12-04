@@ -26,7 +26,10 @@ module RabidMQ
 
     # Get a channel with the Bunny::Session
     def channel
-      connect.create_channel
+      @channel ||= connect.create_channel
+    rescue Bunny::ChannelAlreadyClosed => e
+      @channel = nil
+      channel
     end
 
     # Start a new connection
@@ -44,7 +47,7 @@ module RabidMQ
 
     # Provide a new or existing Bunny::Session
     def connection
-      Bunny.new RabidMQ::Config.load_config
+      @connection ||= Bunny.new RabidMQ::Config.load_config
     end
   end
 end
