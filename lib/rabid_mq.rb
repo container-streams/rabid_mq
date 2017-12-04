@@ -26,7 +26,7 @@ module RabidMQ
 
     # Get a channel with the Bunny::Session
     def channel
-      connection.create_channel
+      connect.create_channel
     end
 
     # Start a new connection
