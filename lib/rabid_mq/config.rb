@@ -9,7 +9,12 @@ module RabidMQ
       end
 
       def custom_config
-        YAML.load(ERB.new(File.read(file_name)).result)[Rails.env].symbolize_keys || {}
+        YAML.load(ERB.new(File.read(file_name)).result)[environment].symbolize_keys || {}
+      end
+
+      def environment
+        return Rails.env if defined?(Rails)
+        return ENV['RAILS_ENV'] || ENV['APPLICATION_ENV'] || 'default'
       end
 
       def default_config
