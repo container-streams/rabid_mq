@@ -24,6 +24,7 @@ module RabidMQ
           self.queue_name queue, exclusive: exclusive
           self.exchange(exchange)
           @routing_key = routing_key
+          amqp_queue.bind(amqp_exchange, routing_key: routing_key)
         end
 
         # Use this as a macro in including classes like
