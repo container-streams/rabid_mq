@@ -18,7 +18,9 @@ module RabidMQ
         self.class.amqp_broadcast *args, **options
       end
 
-      alias_method :broadcast, :amqp_broadcast
+      unless method_defined? :broadcast
+        alias_method :broadcast, :amqp_broadcast
+      end
 
       class << self
         def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key)
@@ -28,7 +30,9 @@ module RabidMQ
           Rails.logger.error e.message
         end
 
-        alias_method :broadcast, :amqp_broadcast
+        unless method_defined? :broadcast
+          alias_method :broadcast, :amqp_broadcast
+        end
 
         def default_amqp_routing_key
           self.name.underscore.gsub(/\//, '.')
@@ -46,14 +50,14 @@ module RabidMQ
 
         # Get a channel with the Bunny::Session
         def channel
-          @channel ||= connect.create_channel
+          @channel ||= amqp_connect.create_channel
         rescue Bunny::ChannelAlreadyClosed => e
           @channel = nil
           channel
         end
 
         # Start a new connection
-        def connect
+        def amqp_connect
           connection.tap do |c|
             c.start
           end

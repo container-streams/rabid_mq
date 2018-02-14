@@ -18,7 +18,7 @@ module RabidMQ
 
     included do
       class << self
-        attr_reader :amqp_queue, :amqp_exchange
+        attr_reader :amqp_queue, :amqp_exchange, :routing_key
 
         def amqp(queue, exchange, exclusive: false, routing_key: '#')
           self.queue_name queue, exclusive: exclusive
@@ -43,14 +43,14 @@ module RabidMQ
         # end
         #
         def exchange(topic, **options)
-          @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), options
+          @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), **options
         end
 
-        def bind(exchange=@amqp_exchange, routing_key: @routing_key, **options)
+        def bind(exchange=amqp_exchange, routing_key: routing_key, **options)
           amqp_queue.bind(exchange, routing_key: routing_key, **options)
         end
 
-        delegate :subscribe, to: :bind
+        delegate :subscribe, to: :amqp_queue
         delegate :channel, to: ::RabidMQ
         delegate :queue, to: :channel
         delegate :name_with_env, to: ::RabidMQ
