@@ -47,7 +47,7 @@ module RabidMQ
           @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), **options
         end
 
-        def bind(exchange=amqp_exchange, routing_key: routing_key, **options)
+        def bind(exchange=amqp_exchange, routing_key: @routing_key, **options)
           amqp_queue.bind(exchange, routing_key: routing_key, **options)
         end
 
