@@ -27,7 +27,11 @@ module RabidMQ
           exchange = topic_exchange(topic)
           exchange.publish(payload, routing_key: routing_key)
         rescue  => e
-          Rails.logger.error e.message
+          if defined? ::Rails
+            Rails.logger.error e.message
+          else
+            puts e.message
+          end
         end
 
         unless method_defined? :broadcast
@@ -66,7 +70,7 @@ module RabidMQ
         def name_with_env(name)
           return name unless defined?(::Rails)
           return name if name.match /\[(development|test|production|integration|pod)\]/
-          name + "[#{Rails.env}]"
+          name + "[#{Config.environment}]"
         end
 
         # Provide a new or existing Bunny::Session

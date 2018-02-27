@@ -28,6 +28,10 @@ module RabidMQ
     def channel
       @channel ||= connect.create_channel
     rescue Bunny::ChannelAlreadyClosed => e
+      reconnect
+    end
+
+    def reconnect
       @channel = nil
       channel
     end
