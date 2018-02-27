@@ -53,12 +53,9 @@ module RabidMQ
         end
 
         # Get a channel with the Bunny::Session
-        def channel
-          @channel ||= amqp_connect.create_channel
-        rescue Bunny::ChannelAlreadyClosed => e
-          @channel = nil
-          channel
-        end
+        delegate  :channel,
+                  :reconnect,
+                  to: ::RabidMQ
 
         # Start a new connection
         def amqp_connect
