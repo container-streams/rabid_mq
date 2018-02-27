@@ -24,7 +24,7 @@ module RabidMQ
 
       class << self
         def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key)
-          exchange = topic_exchange(topic)
+          exchange = topic_exchange(topic, durable: true)
           exchange.publish(payload, routing_key: routing_key)
         rescue  => e
           if defined? ::Rails

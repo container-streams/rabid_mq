@@ -15,13 +15,13 @@ module RabidMQ
   class << self
 
     # Provide a topic exchange on demand connected to the existing channel
-    def topic_exchange(topic, **options)
-      channel.topic(name_with_env(topic), **options)
+    def topic_exchange(topic, durable: true, **options)
+      channel.topic(name_with_env(topic), durable: durable, **options)
     end
 
     # Provide fanout exchange
-    def fanout_exchange(topic, **options)
-      channel.fanout(name_with_env(topic), **options)
+    def fanout_exchange(topic, durable: true, **options)
+      channel.fanout(name_with_env(topic), durable: durable, **options)
     end
 
     # Get a channel with the Bunny::Session
