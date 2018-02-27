@@ -26,7 +26,8 @@ module RabidMQ
 
     # Get a channel with the Bunny::Session
     def channel
-      @channel ||= connect.create_channel
+      return @channel if @channel && !@channel.closed?
+      @channel = connect.create_channel
     rescue Bunny::ChannelAlreadyClosed => e
       reconnect
     end
