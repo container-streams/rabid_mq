@@ -15,13 +15,21 @@ module RabidMQ
   class << self
 
     # Provide a topic exchange on demand connected to the existing channel
-    def topic_exchange(topic, durable: true, **options)
+    def topic_exchange(topic, durable: false, **options)
       channel.topic(name_with_env(topic), durable: durable, **options)
+    rescue Bunny::PreconditionFailed => e
+      if e.message.match(/inequivalent arg 'durable'/).present?
+        durable = !durable
+        reconnect
+        topic_exchange(topic, durable: durable, **options)
+      else
+        fail e
+      end
     end
 
     # Provide fanout exchange
-    def fanout_exchange(topic, durable: true, **options)
-      channel.fanout(name_with_env(topic), durable: durable, **options)
+    def fanout_exchange(topic, **options)
+      channel.fanout(name_with_env(topic), **options)
     end
 
     # Get a channel with the Bunny::Session

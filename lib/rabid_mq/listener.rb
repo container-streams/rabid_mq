@@ -21,9 +21,14 @@ module RabidMQ
         attr_reader :amqp_queue, :amqp_exchange, :routing_key
 
         def amqp(queue, exchange, exclusive: false, routing_key: '#')
-          self.queue_name queue, exclusive: exclusive
+          # Set up an exchange
           self.exchange(exchange)
           @routing_key = routing_key
+
+          # Set up Queue
+          self.queue_name queue, exclusive: exclusive
+
+          # Bind together
           amqp_queue.bind(amqp_exchange, routing_key: routing_key)
         end
 
@@ -44,7 +49,7 @@ module RabidMQ
         # end
         #
         def exchange(topic, **options)
-          @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), **options
+          @amqp_exchange = RabidMQ.topic_exchange topic, **options
         end
 
         def bind(exchange=amqp_exchange, routing_key: @routing_key, **options)

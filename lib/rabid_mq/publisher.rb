@@ -23,8 +23,8 @@ module RabidMQ
       end
 
       class << self
-        def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key)
-          exchange = topic_exchange(topic, durable: true)
+        def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key, **options)
+          exchange = topic_exchange(topic, **options)
           exchange.publish(payload, routing_key: routing_key)
         rescue  => e
           if defined? ::Rails
@@ -42,11 +42,6 @@ module RabidMQ
           self.name.underscore.gsub(/\//, '.')
         end
 
-        # Provide a topic exchange on demand connected to the existing channel
-        def topic_exchange(topic, **options)
-          channel.topic(name_with_env(topic), **options)
-        end
-
         # Provide fanout exchange
         def fanout_exchange(topic, **options)
           channel.fanout(name_with_env(topic), **options)
@@ -55,25 +50,28 @@ module RabidMQ
         # Get a channel with the Bunny::Session
         delegate  :channel,
                   :reconnect,
+                  :connection,
+                  :name_with_env,
+                  :topic_exchange,
                   to: ::RabidMQ
 
-        # Start a new connection
-        def amqp_connect
-          connection.tap do |c|
-            c.start
-          end
-        end
+        # # Start a new connection
+        # def amqp_connect
+        #   connection.tap do |c|
+        #     c.start
+        #   end
+        # end
 
-        def name_with_env(name)
-          return name unless defined?(::Rails)
-          return name if name.match /\[(development|test|production|integration|pod)\]/
-          name + "[#{Config.environment}]"
-        end
+        # def name_with_env(name)
+        #   return name unless defined?(::Rails)
+        #   return name if name.match /\[(development|test|production|integration|pod)\]/
+        #   name + "[#{Config.environment}]"
+        # end
 
-        # Provide a new or existing Bunny::Session
-        def connection
-          @connection ||= Bunny.new RabidMQ::Config.load_config
-        end
+        # # Provide a new or existing Bunny::Session
+        # def connection
+        #   @connection ||= Bunny.new RabidMQ::Config.load_config
+        # end
 
       end
     end
