@@ -20,7 +20,6 @@ module RabidMQ
     rescue Bunny::PreconditionFailed => e
       if !e.message.match(/inequivalent arg 'durable'/).nil?
         puts "[WARNING] RabbitMQ exchange durability does not match for #{topic}, overriding to match exchange!"
-        binding.pry
         durable = !durable
         reconnect
         topic_exchange(topic, durable: durable, **options)
