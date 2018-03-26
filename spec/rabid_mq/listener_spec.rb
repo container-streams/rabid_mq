@@ -4,8 +4,7 @@ RSpec.describe RabidMQ::Listener do
   class RabidMQ::ListenerSpecClass
     include RabidMQ::Listener
 
-    queue_name 'tests'
-    exchange 'tests'
+    amqp 'tests', 'tests', routing_key: "tests.tests"
 
     # This is just here to ensure we don't get errors doing this. It is just about
     # impossible to test (AFAIK) since the RabidMQ handling is asynchronous

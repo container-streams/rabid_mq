@@ -18,8 +18,9 @@ module RabidMQ
     def topic_exchange(topic, durable: false, **options)
       channel.topic(name_with_env(topic), durable: durable, **options)
     rescue Bunny::PreconditionFailed => e
-      if e.message.match(/inequivalent arg 'durable'/).present?
+      if !e.message.match(/inequivalent arg 'durable'/).nil?
         puts "[WARNING] RabbitMQ exchange durability does not match for #{topic}, overriding to match exchange!"
+        binding.pry
         durable = !durable
         reconnect
         topic_exchange(topic, durable: durable, **options)
@@ -50,6 +51,7 @@ module RabidMQ
     def connect
       connection.tap do |c|
         c.start
+
       end
     end
 
