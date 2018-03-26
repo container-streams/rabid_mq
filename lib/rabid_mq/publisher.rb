@@ -49,29 +49,27 @@ module RabidMQ
 
         # Get a channel with the Bunny::Session
         delegate  :channel,
-                  :reconnect,
-                  :connection,
                   :name_with_env,
                   :topic_exchange,
                   to: ::RabidMQ
 
         # # Start a new connection
-        # def amqp_connect
-        #   connection.tap do |c|
-        #     c.start
-        #   end
-        # end
+        def amqp_connect
+          amqp_connection.tap do |c|
+            c.start
+          end
+        end
 
-        # def name_with_env(name)
-        #   return name unless defined?(::Rails)
-        #   return name if name.match /\[(development|test|production|integration|pod)\]/
-        #   name + "[#{Config.environment}]"
-        # end
+        def name_with_env(name)
+          return name unless defined?(::Rails)
+          return name if name.match /\[(development|test|production|integration|pod)\]/
+          name + "[#{Config.environment}]"
+        end
 
-        # # Provide a new or existing Bunny::Session
-        # def connection
-        #   @connection ||= Bunny.new RabidMQ::Config.load_config
-        # end
+        # Provide a new or existing Bunny::Session
+        def amqp_connection
+          @amqp_connection ||= Bunny.new RabidMQ::Config.load_config
+        end
 
       end
     end

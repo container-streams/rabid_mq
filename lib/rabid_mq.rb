@@ -50,7 +50,6 @@ module RabidMQ
     def connect
       connection.tap do |c|
         c.start
-
       end
     end
 
