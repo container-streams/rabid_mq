@@ -1,3 +1,3 @@
 module RabidMQ
-  VERSION = "0.1.29"
+  VERSION = "0.1.36"
 end
