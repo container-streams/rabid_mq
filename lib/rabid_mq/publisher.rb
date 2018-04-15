@@ -43,13 +43,15 @@ module RabidMQ
         end
 
         # Provide a topic exchange on demand connected to the existing channel
-        def topic_exchange(topic, **options)
-          channel.topic(name_with_env(topic), **options)
+        def topic_exchange(topic, include_environment_name: true, **options)
+          topic_name = include_environment_name ? name_with_env(topic) : topic
+          channel.topic(topic_name, **options)
         end
 
         # Provide fanout exchange
-        def fanout_exchange(topic, **options)
-          channel.fanout(name_with_env(topic), **options)
+        def fanout_exchange(topic, include_environment_name: true, **options)
+          topic_name = include_environment_name ? name_with_env(topic) : topic
+          channel.fanout(topic_name, **options)
         end
 
         def channel

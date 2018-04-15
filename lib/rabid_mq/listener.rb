@@ -20,9 +20,9 @@ module RabidMQ
       class << self
         attr_reader :amqp_queue, :amqp_exchange, :routing_key
 
-        def amqp(queue, exchange, exclusive: false, routing_key: '#')
-          self.queue_name queue, exclusive: exclusive
-          self.exchange(exchange)
+        def amqp(queue, exchange, exclusive: false, routing_key: '#', include_environment_name: true)
+          self.queue_name queue, exclusive: exclusive, include_environment_name: include_environment_name
+          self.exchange(exchange, include_environment_name: include_environment_name)
           @routing_key = routing_key
           amqp_queue.bind(amqp_exchange, routing_key: routing_key)
         end
@@ -33,8 +33,9 @@ module RabidMQ
         #   queue_name 'some.queue_name', exclusive: true
         # end
         #
-        def queue_name(name, **options)
-          @amqp_queue = RabidMQ.channel.queue(name_with_env(name), **options)
+        def queue_name(name, include_environment_name: true, **options)
+          resolved_name = include_environment_name ? name_with_env(name) : name
+          @amqp_queue = RabidMQ.channel.queue(resolved_name, **options)
         end
 
         # Use this as a macro in including classes like
@@ -43,8 +44,9 @@ module RabidMQ
         #   exchange 'exchange.name'
         # end
         #
-        def exchange(topic, **options)
-          @amqp_exchange = RabidMQ.topic_exchange name_with_env(topic), **options
+        def exchange(topic, include_environment_name: true, **options)
+          topic_name = include_environment_name ? name_with_env(topic) : topic
+          @amqp_exchange = RabidMQ.topic_exchange topic_name, **options
         end
 
         def bind(exchange=amqp_exchange, routing_key: @routing_key, **options)
