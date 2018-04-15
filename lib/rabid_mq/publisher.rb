@@ -23,8 +23,8 @@ module RabidMQ
       end
 
       class << self
-        def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key, **options)
-          exchange = topic_exchange(topic)
+        def amqp_broadcast(topic, payload, routing_key: self.default_amqp_routing_key, include_environment_name: true, **options)
+          exchange = topic_exchange(topic, include_environment_name: include_environment_name)
           exchange.publish(payload, routing_key: routing_key, **options)
         rescue  => e
           if defined? ::Rails
