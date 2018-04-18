@@ -19,7 +19,7 @@ module RabidMQ
       topic_name = include_environment_name ? name_with_env(topic) : topic
       channel.topic(topic_name, **options)
     rescue Bunny::PreconditionFailed => e
-      topic_exchange(topic, include_environment_name: include_environment_name, durable: !options.fetch(:durable), **options)
+      topic_exchange(topic, include_environment_name: include_environment_name, durable: !options.fetch(:durable, false), **options)
     end
 
     # Provide fanout exchange
